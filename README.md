@@ -1,56 +1,135 @@
-# Welcome to your Expo app 👋
+# VotiQra
 
-This is an [Expo](https://expo.dev) project created with [`create-expo-app`](https://www.npmjs.com/package/create-expo-app).
+> Secure • Transparent • Professional Digital Elections
 
-## Get started
+VotiQra is a mobile-first Election Management Platform built to help organizations conduct secure, transparent, and professional digital elections.
 
-1. Install dependencies
+The platform enables universities, associations, companies, NGOs, clubs, cooperatives, and other organizations to create elections, manage candidates and voters, conduct voting, and publish results from a single application.
 
-   ```bash
-   npm install
-   ```
+---
 
-2. Start the app
+## Vision
 
-   ```bash
-   npx expo start
-   ```
+Build the most trusted election management platform for organizations.
 
-In the output, you'll find options to open the app in a
+---
 
-- [development build](https://docs.expo.dev/develop/development-builds/introduction/)
-- [Android emulator](https://docs.expo.dev/workflow/android-studio-emulator/)
-- [iOS simulator](https://docs.expo.dev/workflow/ios-simulator/)
-- [Expo Go](https://expo.dev/go), a limited sandbox for trying out app development with Expo
+## Current Status
 
-You can start developing by editing the files inside the **app** directory. This project uses [file-based routing](https://docs.expo.dev/router/introduction).
+🚧 Under Active Development
 
-## Get a fresh project
+The project is currently in its initial development phase.
 
-When you're ready, run:
+---
 
-```bash
-npm run reset-project
+## Technology Stack
+
+### Mobile
+
+- React Native
+- Expo
+- TypeScript
+- Expo Router
+
+### Styling
+
+- NativeWind
+- TailwindCSS
+
+### State Management
+
+- Zustand
+- TanStack Query
+
+### Authentication
+
+- Clerk
+
+### Forms
+
+- React Hook Form
+- Zod
+
+### Networking
+
+- Axios
+
+### Animations
+
+- React Native Reanimated
+- Lottie
+
+### Icons
+
+- Lucide React Native
+
+---
+
+## Documentation
+
+Project documentation can be found inside:
+
+```
+docs/
 ```
 
-This command will move the starter code to the **app-example** directory and create a blank **app** directory where you can start developing.
+Important documents include:
 
-### Other setup steps
+- PROJECT_PRINCIPLES.md
+- AGENTS.md
+- ARCHITECTURE.md
+- PRODUCT.md
+- USER_EXPERIENCE.md
+- NAVIGATION.md
+- DESIGN_SYSTEM.md
 
-- To set up ESLint for linting, run `npx expo lint`, or follow our guide on ["Using ESLint and Prettier"](https://docs.expo.dev/guides/using-eslint/)
-- If you'd like to set up unit testing, follow our guide on ["Unit Testing with Jest"](https://docs.expo.dev/develop/unit-testing/)
-- Learn more about the TypeScript setup in this template in our guide on ["Using TypeScript"](https://docs.expo.dev/guides/typescript/)
+---
 
-## Learn more
+## Project Structure
 
-To learn more about developing your project with Expo, look at the following resources:
+```
+app/
+assets/
+components/
+constants/
+features/
+hooks/
+lib/
+services/
+store/
+types/
+utils/
+docs/
+prompts/
+```
 
-- [Expo documentation](https://docs.expo.dev/): Learn fundamentals, or go into advanced topics with our [guides](https://docs.expo.dev/guides).
-- [Learn Expo tutorial](https://docs.expo.dev/tutorial/introduction/): Follow a step-by-step tutorial where you'll create a project that runs on Android, iOS, and the web.
+---
 
-## Join the community
+## Development Philosophy
 
-Join our community of developers creating universal apps.
+VotiQra follows:
 
-- [Expo on GitHub](https://github.com/expo/expo): View our open source platform and contribute.
-- [Discord community](https://chat.expo.dev): Chat with Expo users and ask questions.
+- Mobile First
+- Feature First
+- Component Driven
+- Strongly Typed
+- Secure by Design
+- Production Ready
+
+---
+
+## Contributing
+
+Before contributing:
+
+1. Read all project documentation.
+2. Follow the engineering standards.
+3. Follow the design system.
+4. Keep changes focused.
+5. Write production-ready code.
+
+---
+
+## License
+
+This repository is currently private and under active development.
