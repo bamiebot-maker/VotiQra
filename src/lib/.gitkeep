@@ -1,0 +1,15 @@
+// Development setup checks
+// Verify the following are working:
+
+// 1. TypeScript compilation: npx tsc --noEmit
+// 2. ESLint: npx eslint src/**/*.ts{,x}
+// 3. Prettier formatting: npx prettier --write .
+// 4. Expo Router: Should navigate between routes
+// 5. NativeWind: Tailwind classes should work
+// 6. Zustand: Store state management
+// 7. TanStack Query: API query management
+// 8. Clerk: Authentication provider
+// 9. Axios: API client with interceptors
+// 10. Forms: React Hook Form + Zod
+
+.gitkeep
