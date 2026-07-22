@@ -1,6 +1,7 @@
 {
   "expo": {
     "name": "Votiqra",
+    "owner": "bitorg",
     "slug": "votiqra",
     "version": "1.0.0",
     "orientation": "portrait",
@@ -40,6 +41,11 @@
     "experiments": {
       "typedRoutes": true,
       "reactCompiler": true
+    },
+    "extra": {
+      "eas": {
+        "projectId": "88b15f3b-6a80-4f0b-96b3-93610d9d188d"
+      }
     }
   }
 }
