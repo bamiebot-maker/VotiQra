@@ -1,6 +1,6 @@
 import { Stack } from 'expo-router';
 
-export default function ModalsLayout(): JSX.Element {
+export default function ModalsLayout() {
   return (
     <Stack
       screenOptions={{

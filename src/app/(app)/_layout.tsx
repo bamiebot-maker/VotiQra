@@ -1,6 +1,6 @@
 import { Stack } from 'expo-router';
 
-export default function AppLayout(): JSX.Element {
+export default function AppLayout() {
   return (
     <Stack
       screenOptions={{

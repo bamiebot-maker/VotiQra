@@ -13,7 +13,7 @@ import {
 // Keep the splash screen visible while we fetch resources
 SplashScreen.preventAutoHideAsync();
 
-export default function RootLayout(): JSX.Element {
+export default function RootLayout() {
   useEffect(() => {
     // Simulate loading resources
     const initializeApp = async (): Promise<void> => {
@@ -40,7 +40,7 @@ export default function RootLayout(): JSX.Element {
               <Stack
                 screenOptions={{
                   headerShown: false,
-                  animationEnabled: false,
+                animation: 'fade',
                 }}
               >
                 <Stack.Screen name="index" />
@@ -49,7 +49,7 @@ export default function RootLayout(): JSX.Element {
                 <Stack.Screen name="(app)" />
                 <Stack.Screen name="(modals)" options={{ presentation: 'modal' }} />
               </Stack>
-              <StatusBar barStyle="dark-content" />
+              <StatusBar style="dark" />
             </QueryProvider>
           </ThemeProvider>
         </AuthProvider>

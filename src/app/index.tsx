@@ -1,33 +1,14 @@
-import { Text, View } from 'react-native';
-import { Link } from 'expo-router';
+import { Redirect } from 'expo-router';
+import { ActivityIndicator, StyleSheet, Text, View } from 'react-native';
+import { BrandMark } from '@/components/voter/BrandMark';
+import { useAuth } from '@/hooks/useAuth';
 
-export default function HomeScreen(): JSX.Element {
-  return (
-    <View className="flex-1 items-center justify-center bg-gradient-to-b from-primary-50 to-primary-100">
-      <View className="gap-4">
-        <Text className="text-3xl font-bold text-primary-900">VotiQra ✔️</Text>
-        <Text className="text-center text-lg text-primary-700">
-          Election Management Platform
-        </Text>
-
-        <View className="mt-8 gap-2">
-          <Link href="/(auth)" asChild>
-            <Text className="rounded-lg bg-primary-500 p-4 text-center font-semibold text-white">
-              Go to Auth
-            </Text>
-          </Link>
-          <Link href="/(onboarding)" asChild>
-            <Text className="rounded-lg bg-secondary-500 p-4 text-center font-semibold text-white">
-              Go to Onboarding
-            </Text>
-          </Link>
-          <Link href="/(app)" asChild>
-            <Text className="rounded-lg bg-success-500 p-4 text-center font-semibold text-white">
-              Go to App
-            </Text>
-          </Link>
-        </View>
-      </View>
-    </View>
-  );
+export default function EntryScreen() {
+  const { loading, session, voter } = useAuth();
+  if (loading) return <View style={styles.container}><BrandMark /><ActivityIndicator color="#08A66C" size="large" /><Text style={styles.text}>Verifying your secure access…</Text></View>;
+  if (!session) return <Redirect href="/(auth)" />;
+  if (!voter) return <Redirect href="/(onboarding)" />;
+  return <Redirect href="/(app)" />;
 }
+
+const styles = StyleSheet.create({ container: { flex: 1, backgroundColor: '#F7FBF9', alignItems: 'center', justifyContent: 'center', gap: 22 }, text: { color: '#60756E', fontSize: 13 } });
