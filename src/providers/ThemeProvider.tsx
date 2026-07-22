@@ -9,7 +9,7 @@ interface ThemeProviderProps {
 export const ThemeProvider: React.FC<ThemeProviderProps> = ({ children }) => {
   const systemColorScheme = useColorScheme();
   const { theme } = useThemeStore();
-  const [isDark, setIsDark] = useState(false);
+  const [_isDark, setIsDark] = useState(false);
 
   useEffect(() => {
     if (theme === 'system') {

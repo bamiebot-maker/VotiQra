@@ -1,9 +1,39 @@
-import { Text, View } from 'react-native';
+import { useCallback, useEffect, useState } from 'react';
+import { RefreshControl, SafeAreaView, ScrollView, StyleSheet, Text, View } from 'react-native';
+import { router } from 'expo-router';
+import { CalendarDays, CheckCircle2, ChevronRight, Clock3, LogOut, ShieldCheck, Vote } from 'lucide-react-native';
+import { BrandMark } from '@/components/voter/BrandMark';
+import { PrimaryButton } from '@/components/voter/PrimaryButton';
+import { useAuth } from '@/hooks/useAuth';
+import { supabase } from '@/lib/supabase';
+import type { Election } from '@/types/supabase';
 
-export default function AppPlaceholder(): JSX.Element {
-  return (
-    <View className="flex-1 items-center justify-center bg-success-500">
-      <Text className="text-xl font-bold text-white">App Placeholder</Text>
-    </View>
-  );
+type ElectionAccess = { election_id: string; voted_at: string | null; is_eligible: boolean };
+type Organization = { id: string; name: string };
+
+export default function VoterHomeScreen() {
+  const { profile, voter, signOut } = useAuth();
+  const [elections, setElections] = useState<Election[]>([]); const [refreshing, setRefreshing] = useState(false);
+
+  const loadElections = useCallback(async (): Promise<void> => {
+    if (!voter) return;
+    const { data: accessData } = await supabase.from('election_voters').select('election_id,voted_at,is_eligible').eq('voter_id', voter.id).eq('is_eligible', true);
+    const access = (accessData ?? []) as ElectionAccess[];
+    const ids = access.map(item => item.election_id);
+    if (!ids.length) { setElections([]); return; }
+    const { data: electionData } = await supabase.from('elections').select('id,organization_id,title,description,status,starts_at,ends_at').in('id', ids).in('status', ['scheduled','live','paused','closed']);
+    const rows = (electionData ?? []) as Election[];
+    const orgIds = [...new Set(rows.map(item => item.organization_id))];
+    const { data: orgData } = await supabase.from('organizations').select('id,name').in('id', orgIds);
+    const orgs = new Map(((orgData ?? []) as Organization[]).map(item => [item.id, item.name]));
+    setElections(rows.map(item => ({ ...item, organization_name: orgs.get(item.organization_id), voted_at: access.find(link => link.election_id === item.id)?.voted_at })));
+  }, [voter]);
+
+  useEffect(() => { if (!voter) router.replace('/(onboarding)'); else void loadElections(); }, [loadElections, voter]);
+  async function refresh(): Promise<void> { setRefreshing(true); await loadElections(); setRefreshing(false); }
+
+  const liveCount = elections.filter(item => item.status === 'live' && !item.voted_at).length;
+  return <SafeAreaView style={styles.safe}><ScrollView refreshControl={<RefreshControl refreshing={refreshing} onRefresh={() => void refresh()} tintColor="#08A66C" />} contentContainerStyle={styles.content}><View style={styles.header}><BrandMark /><View style={styles.headerActions}><View style={styles.avatar}><Text style={styles.avatarText}>{(voter?.full_name || profile?.full_name || 'V').slice(0,1).toUpperCase()}</Text></View><LogOut onPress={() => void signOut()} size={20} color="#60756E" /></View></View><View style={styles.welcome}><Text style={styles.kicker}>VERIFIED VOTER</Text><Text style={styles.title}>Hello, {(voter?.full_name || profile?.full_name || 'Voter').split(' ')[0]}.</Text><Text style={styles.subtitle}>{liveCount ? `You have ${liveCount} live ballot${liveCount > 1 ? 's' : ''} ready.` : 'Your eligible elections will appear here.'}</Text></View><View style={styles.statusCard}><View style={styles.statusIcon}><ShieldCheck size={25} color="#FFFFFF" /></View><View style={styles.statusCopy}><Text style={styles.statusLabel}>IDENTITY STATUS</Text><Text style={styles.statusValue}>Verified and eligible</Text></View><CheckCircle2 size={23} color="#47D99A" /></View><View style={styles.sectionHead}><Text style={styles.sectionTitle}>Your elections</Text><Text style={styles.sectionMeta}>{elections.length} total</Text></View>{elections.length ? elections.map(election => { const done=Boolean(election.voted_at); const live=election.status==='live'; return <View key={election.id} style={[styles.card,live&&!done&&styles.liveCard]}><View style={styles.cardTop}><View style={[styles.statePill,live&&styles.livePill,done&&styles.donePill]}><Text style={[styles.stateText,live&&styles.liveText,done&&styles.doneText]}>{done?'VOTED':election.status.toUpperCase()}</Text></View><Text style={styles.org}>{election.organization_name || 'Your organization'}</Text></View><Text style={styles.electionTitle}>{election.title}</Text>{election.description ? <Text numberOfLines={2} style={styles.description}>{election.description}</Text> : null}<View style={styles.timeRow}>{live ? <Vote size={17} color="#08A66C" /> : <CalendarDays size={17} color="#70877E" />}<Text style={styles.timeText}>{done?'Your ballot was submitted securely':live?'Voting is open now':election.starts_at?`Starts ${new Date(election.starts_at).toLocaleDateString()}`:'Schedule pending'}</Text><ChevronRight size={18} color="#8EA199" /></View>{live&&!done&&<PrimaryButton label="Start secure voting" onPress={() => router.push({ pathname: '/(modals)', params: { electionId: election.id } })} />}</View>; }) : <View style={styles.empty}><View style={styles.emptyIcon}><Clock3 size={28} color="#08A66C" /></View><Text style={styles.emptyTitle}>No election yet</Text><Text style={styles.emptyText}>Once an organization assigns you to an election, it will appear automatically.</Text></View>}<View style={styles.privacy}><ShieldCheck size={20} color="#087A52" /><Text style={styles.privacyText}>Your identity verifies eligibility. Your ballot choices are stored separately and remain private.</Text></View></ScrollView></SafeAreaView>;
 }
+
+const styles=StyleSheet.create({safe:{flex:1,backgroundColor:'#F4F8F6'},content:{padding:22,paddingTop:22,paddingBottom:45},header:{flexDirection:'row',alignItems:'center',justifyContent:'space-between'},headerActions:{flexDirection:'row',alignItems:'center',gap:15},avatar:{width:38,height:38,borderRadius:12,backgroundColor:'#DDF5EA',alignItems:'center',justifyContent:'center'},avatarText:{fontWeight:'900',color:'#087A52'},welcome:{marginTop:38},kicker:{fontSize:9,fontWeight:'900',letterSpacing:1.8,color:'#08A66C'},title:{fontSize:38,fontWeight:'900',letterSpacing:-1.8,color:'#10251F',marginTop:7},subtitle:{fontSize:14,color:'#60756E',marginTop:7},statusCard:{marginTop:25,backgroundColor:'#0A3127',borderRadius:19,padding:17,flexDirection:'row',alignItems:'center',gap:13},statusIcon:{width:45,height:45,borderRadius:14,backgroundColor:'#0A9D69',alignItems:'center',justifyContent:'center'},statusCopy:{flex:1},statusLabel:{fontSize:8,fontWeight:'900',letterSpacing:1.4,color:'#72C8A6'},statusValue:{fontSize:15,fontWeight:'800',color:'#FFFFFF',marginTop:4},sectionHead:{flexDirection:'row',justifyContent:'space-between',alignItems:'center',marginTop:31,marginBottom:13},sectionTitle:{fontSize:20,fontWeight:'900',color:'#10251F'},sectionMeta:{fontSize:11,color:'#70877E'},card:{backgroundColor:'#FFFFFF',borderWidth:1,borderColor:'#DCE8E3',borderRadius:20,padding:18,marginBottom:13,gap:13},liveCard:{borderColor:'#5DC99D'},cardTop:{flexDirection:'row',alignItems:'center',justifyContent:'space-between'},statePill:{backgroundColor:'#EFF3F1',borderRadius:99,paddingHorizontal:9,paddingVertical:5},livePill:{backgroundColor:'#DDF8EC'},donePill:{backgroundColor:'#E8F0FF'},stateText:{fontSize:8,fontWeight:'900',letterSpacing:1,color:'#708078'},liveText:{color:'#087A52'},doneText:{color:'#3C62A8'},org:{fontSize:10,color:'#70877E'},electionTitle:{fontSize:20,fontWeight:'900',color:'#10251F'},description:{fontSize:12,lineHeight:19,color:'#60756E'},timeRow:{flexDirection:'row',alignItems:'center',gap:9,borderTopWidth:1,borderTopColor:'#EDF2EF',paddingTop:13},timeText:{flex:1,fontSize:11,fontWeight:'700',color:'#49645A'},empty:{backgroundColor:'#FFFFFF',borderRadius:20,borderWidth:1,borderColor:'#DCE8E3',padding:31,alignItems:'center'},emptyIcon:{width:57,height:57,borderRadius:18,backgroundColor:'#E5F8EF',alignItems:'center',justifyContent:'center'},emptyTitle:{fontSize:18,fontWeight:'900',color:'#10251F',marginTop:15},emptyText:{fontSize:12,lineHeight:19,color:'#60756E',textAlign:'center',marginTop:7},privacy:{flexDirection:'row',gap:10,backgroundColor:'#E9F7F1',padding:15,borderRadius:15,marginTop:22},privacyText:{flex:1,fontSize:11,lineHeight:17,color:'#49685E'}});

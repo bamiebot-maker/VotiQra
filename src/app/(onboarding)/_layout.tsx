@@ -1,11 +1,11 @@
 import { Stack } from 'expo-router';
 
-export default function OnboardingLayout(): JSX.Element {
+export default function OnboardingLayout() {
   return (
     <Stack
       screenOptions={{
         headerShown: false,
-        animationEnabled: false,
+        animation: 'none',
       }}
     >
       <Stack.Screen name="index" />
